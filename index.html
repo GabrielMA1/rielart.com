@@ -23,90 +23,11 @@
 
 			</header>
 
-<!-- Signup Form -->
-<form id="signup-form">
-    <input type="email" name="email" id="email" placeholder="Email Address" required>
-    <input type="submit" value="Sign Up">
-</form>
-
-<!-- Success Message -->
-<span id="success-message" class="message"></span>
-
-<script>
-// Signup Form.
-(function() {
-
-    // Vars.
-    var $form = document.getElementById('signup-form'),
-        $submit = document.querySelector('#signup-form input[type="submit"]'),
-        $message = document.getElementById('success-message');
-
-    // Bail if addEventListener isn't supported.
-    if (!('addEventListener' in $form))
-        return;
-
-    // Message.
-    $message._show = function(type, text) {
-        $message.innerHTML = text;
-        $message.className = 'message ' + type;
-        $message.style.display = 'block';
-
-        window.setTimeout(function() {
-            $message._hide();
-        }, 3000);
-    };
-
-    $message._hide = function() {
-        $message.style.display = 'none';
-    };
-
-    // Events.
-    $form.addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        // Hide message.
-        $message._hide();
-
-        // Disable submit.
-        $submit.disabled = true;
-
-        // Process form.
-        fetch("https://formspree.io/f/myyrpbye", {
-                method: "POST",
-                body: new FormData($form),
-                headers: {
-                    "Accept": "application/json"
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Reset form.
-                $form.reset();
-
-                // Enable submit.
-                $submit.disabled = false;
-
-                // Show success message.
-                $message._show('success', 'Thank you for signing up!');
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                // Enable submit on error.
-                $submit.disabled = false;
-
-                // Show failure message if needed.
-                //$message._show('failure', 'Something went wrong. Please try again.');
-            });
-    });
-
-})();
-</script>
-
+		<!-- Signup Form -->
+			<form id="signup-form" method="post" action="https://formspree.io/f/myyrpbye">
+				<input type="email" name="email" id="email" placeholder="Email Address" />
+				<input type="submit" value="Sign Up" />
+			</form>
 
 		<!-- Footer -->
 			<footer id="footer">

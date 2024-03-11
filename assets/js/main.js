@@ -101,6 +101,8 @@
 
 		})();
 
+// main.js
+
 // Signup Form.
 (function() {
 
@@ -119,6 +121,7 @@
     $form.appendChild($message);
 
     $message._show = function(type, text) {
+
         $message.innerHTML = text;
         $message.classList.add(type);
         $message.classList.add('visible');
@@ -126,6 +129,7 @@
         window.setTimeout(function() {
             $message._hide();
         }, 3000);
+
     };
 
     $message._hide = function() {
@@ -146,40 +150,33 @@
         $submit.disabled = true;
 
         // Process form.
-        // Note: Updated to use Formspree and display success message.
-        fetch("https://formspree.io/f/myyrpbye", {
-                method: "POST",
-                body: new FormData($form),
-                headers: {
-                    "Accept": "application/json"
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Reset form.
-                $form.reset();
+        fetch('https://formspree.io/f/myyrpbye', {
+            method: 'POST',
+            body: new FormData($form),
+            headers: {
+                'Accept': 'application/json'
+            }
+        }).then(function(response) {
+            return response.json();
+        }).then(function(data) {
+            // Reset form.
+            $form.reset();
 
-                // Enable submit.
-                $submit.disabled = false;
+            // Enable submit.
+            $submit.disabled = false;
 
-                // Show success message.
-                $message._show('success', 'Thank you for signing up!');
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                // Enable submit on error.
-                $submit.disabled = false;
+            // Show message.
+            $message._show('success', 'Thank you!');
+            //$message._show('failure', 'Something went wrong. Please try again.');
+        }).catch(function(error) {
+            console.error('Error:', error);
+            $message._show('failure', 'Something went wrong. Please try again.');
+            $submit.disabled = false;
+        });
 
-                // Show failure message if needed.
-                //$message._show('failure', 'Something went wrong. Please try again.');
-            });
     });
 
 })();
+
 
 })();
