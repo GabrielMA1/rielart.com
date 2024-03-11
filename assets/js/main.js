@@ -101,71 +101,85 @@
 
 		})();
 
-	// Signup Form.
-		(function() {
+// Signup Form.
+(function() {
 
-			// Vars.
-				var $form = document.querySelectorAll('#signup-form')[0],
-					$submit = document.querySelectorAll('#signup-form input[type="submit"]')[0],
-					$message;
+    // Vars.
+    var $form = document.querySelectorAll('#signup-form')[0],
+        $submit = document.querySelectorAll('#signup-form input[type="submit"]')[0],
+        $message;
 
-			// Bail if addEventListener isn't supported.
-				if (!('addEventListener' in $form))
-					return;
+    // Bail if addEventListener isn't supported.
+    if (!('addEventListener' in $form))
+        return;
 
-			// Message.
-				$message = document.createElement('span');
-					$message.classList.add('message');
-					$form.appendChild($message);
+    // Message.
+    $message = document.createElement('span');
+    $message.classList.add('message');
+    $form.appendChild($message);
 
-				$message._show = function(type, text) {
+    $message._show = function(type, text) {
+        $message.innerHTML = text;
+        $message.classList.add(type);
+        $message.classList.add('visible');
 
-					$message.innerHTML = text;
-					$message.classList.add(type);
-					$message.classList.add('visible');
+        window.setTimeout(function() {
+            $message._hide();
+        }, 3000);
+    };
 
-					window.setTimeout(function() {
-						$message._hide();
-					}, 3000);
+    $message._hide = function() {
+        $message.classList.remove('visible');
+    };
 
-				};
+    // Events.
+    // Note: If you're *not* using AJAX, get rid of this event listener.
+    $form.addEventListener('submit', function(event) {
 
-				$message._hide = function() {
-					$message.classList.remove('visible');
-				};
+        event.stopPropagation();
+        event.preventDefault();
 
-			// Events.
-			// Note: If you're *not* using AJAX, get rid of this event listener.
-				$form.addEventListener('submit', function(event) {
+        // Hide message.
+        $message._hide();
 
-					event.stopPropagation();
-					event.preventDefault();
+        // Disable submit.
+        $submit.disabled = true;
 
-					// Hide message.
-						$message._hide();
+        // Process form.
+        // Note: Updated to use Formspree and display success message.
+        fetch("https://formspree.io/f/myyrpbye", {
+                method: "POST",
+                body: new FormData($form),
+                headers: {
+                    "Accept": "application/json"
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Reset form.
+                $form.reset();
 
-					// Disable submit.
-						$submit.disabled = true;
+                // Enable submit.
+                $submit.disabled = false;
 
-					// Process form.
-					// Note: Doesn't actually do anything yet (other than report back with a "thank you"),
-					// but there's enough here to piece together a working AJAX submission call that does.
-						window.setTimeout(function() {
+                // Show success message.
+                $message._show('success', 'Thank you for signing up!');
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                // Enable submit on error.
+                $submit.disabled = false;
 
-							// Reset form.
-								$form.reset();
+                // Show failure message if needed.
+                //$message._show('failure', 'Something went wrong. Please try again.');
+            });
+    });
 
-							// Enable submit.
-								$submit.disabled = false;
-
-							// Show message.
-								$message._show('success', 'Thank you!');
-								//$message._show('failure', 'Something went wrong. Please try again.');
-
-						}, 750);
-
-				});
-
-		})();
+})();
 
 })();
