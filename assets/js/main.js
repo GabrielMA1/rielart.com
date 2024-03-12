@@ -149,6 +149,15 @@
         // Disable submit.
         $submit.disabled = true;
 
+        // Check if email field is empty.
+        var emailInput = $form.querySelector('input[type="email"]');
+        var email = emailInput.value.trim();
+        if (email === '') {
+            $message._show('failure', 'Please enter your email address.');
+            $submit.disabled = false;
+            return; // Stop further execution
+        }
+
         // Process form.
         fetch('https://formspree.io/f/myyrpbye', {
             method: 'POST',
@@ -177,6 +186,7 @@
     });
 
 })();
+
 
 
 })();
